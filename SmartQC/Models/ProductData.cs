@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace SmartQC.Models
 {
-    public class ProductDetail
+    public class ProductData
     {
         [Key]
-        public string? SerialNumber { get; set; }
         public string? ProductName { get; set; }
-        public string? UserName { get; set; }
-        public bool Defection { get; set; }
+        public int Quantity {  get; set; }
+        public int Defective {  get; set; }
     }
 }

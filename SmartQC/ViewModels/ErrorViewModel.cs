@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartQC.Models
+namespace SmartQC.ViewModels
 {
-    internal class User
+    internal class ErrorViewModel
     {
     }
 }
