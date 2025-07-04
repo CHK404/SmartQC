@@ -130,9 +130,9 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Vertical" DockPanel.Dock="Left" Margin="10">
-                    <Button Width="105" Height="50" Content="일별" FontSize="16" FontWeight="DemiBold" Margin="0 0 0 10"></Button>
-                    <Button Width="105" Height="50" Content="주별" FontSize="16" FontWeight="DemiBold" Margin="0 0 0 10"></Button>
-                    <Button Width="105" Height="50" Content="월별" FontSize="16" FontWeight="DemiBold" Margin="0 0 0 10"></Button>
+                    <Button BorderThickness="0" Width="105" Height="50" Content="일간" FontSize="16" FontWeight="DemiBold" Margin="0 0 0 10"></Button>
+                    <Button BorderThickness="0" Width="105" Height="50" Content="주간" FontSize="16" FontWeight="DemiBold" Margin="0 0 0 10"></Button>
+                    <Button BorderThickness="0" Width="105" Height="50" Content="월간" FontSize="16" FontWeight="DemiBold" Margin="0 0 0 10"></Button>
                     
                 </StackPanel>
 
@@ -146,9 +146,9 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="2"  HorizontalAlignment="Right"  >
-                    <Button Width="105" Height="50" Content="100%" Background="#ddd" Margin="5"></Button>
-                    <Button Width="105" Height="50" Content="100%" Background="#ddd" Margin="5"></Button>
-                    <Button Width="105" Height="50" Content="100%" Background="#ddd" Margin="5"></Button>
+                    <Button BorderThickness="0"  Width="105" Height="50" Content="100%" Background="#ddd" Margin="5"></Button>
+                    <Button BorderThickness="0" Width="105" Height="50" Content="100%" Background="#ddd" Margin="5"></Button>
+                    <Button BorderThickness="0" Width="105" Height="50" Content="100%" Background="#ddd" Margin="5"></Button>
                 </StackPanel>
                 </Grid>
             </DockPanel>
