@@ -19,10 +19,15 @@ namespace SmartQC
     /// </summary>
     public partial class MainWindow : Window
     {
+        private MainViewModel vm;
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new MainViewModel();
+            vm = new MainViewModel();
+            this.DataContext = vm;
+
+            vm.AvailabilityPlotControl = this.AvailabilityPlotControl;
+            vm.PlotControl = this.PlotControl;
         }
 
         private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

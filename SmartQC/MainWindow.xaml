@@ -93,6 +93,14 @@
                 </StackPanel>
             </Button>
             </StackPanel>
+            <Button Width="30" Background="Black"
+                    Command="{Binding StartCommand}">
+            </Button>
+            <Button Width="30" Background="Red"
+                    Command="{Binding StopCommand}">
+            </Button>
+                
+                
 
             <Button Style="{StaticResource IconButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center"
              DockPanel.Dock="Bottom" Margin="20" >
@@ -138,18 +146,18 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 0 20">
-                    <ProgressBar x:Name="ProgressBarDay" Width="550" Height="50" Style="{StaticResource AnimatedProgressBar}"
+                    <ProgressBar x:Name="ProgressBarDay" Width="550" Height="50" Foreground="black"
                                  Value="{Binding Dayprogressvalue}"
                                  Minimum="0" Maximum="100" Margin="5" 
-                                 ValueChanged="ProgressBar_ValueChanged"/>
-                    <ProgressBar x:Name="ProgressBarWeek" Width="550" Height="50" Style="{StaticResource AnimatedProgressBar}"
-                                 Value="{Binding Weekprogressvalue}"
+                                 />
+                    <ProgressBar x:Name="ProgressBarWeek" Width="550" Height="50" 
+                                 Value="{Binding Weekprogressvalue}" Foreground="Black"
                                  Minimum="0" Maximum="100"  Margin="5"
-                                 ValueChanged="ProgressBar_ValueChanged"/>
-                    <ProgressBar x:Name="ProgressBarMonth" Width="550" Height="50" Style="{StaticResource AnimatedProgressBar}"
-                                 Value="{Binding Monthprogressvalue}"
+                                 />
+                    <ProgressBar x:Name="ProgressBarMonth" Width="550" Height="50" 
+                                 Value="{Binding Monthprogressvalue}" Foreground="Black"
                                  Minimum="0" Maximum="100"  Margin="5" 
-                                 ValueChanged="ProgressBar_ValueChanged"/>
+                                 />
                 </StackPanel>
 
                 <StackPanel Grid.Column="2"  HorizontalAlignment="Right"  >

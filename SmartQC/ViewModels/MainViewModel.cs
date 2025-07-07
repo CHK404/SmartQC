@@ -25,11 +25,11 @@ namespace SmartQC.ViewModels
         [ObservableProperty]
         public int errorcounts;
         [ObservableProperty]
-        public int totaldaycount = 40;
+        public int totaldaycount = 20;
         [ObservableProperty]
-        public int totalweekcount = 300;
+        public int totalweekcount = 140;
         [ObservableProperty]
-        public int totalmonthcount = 9000;
+        public int totalmonthcount = 4200;
         [ObservableProperty]
         public int completedcount;
         [ObservableProperty]
@@ -39,11 +39,11 @@ namespace SmartQC.ViewModels
         [ObservableProperty]
         public int plannedTimeInMinutes;
         [ObservableProperty]
-        public int dayprogressvalue;
+        public double dayprogressvalue;
         [ObservableProperty]
-        public int weekprogressvalue; 
+        public double weekprogressvalue; 
         [ObservableProperty]
-        public int monthprogressvalue;
+        public double monthprogressvalue;
         public List<double> TimeHistory { get; set; } = new();
         public List<double> AvailabilityHistory { get; set; } = new();
         private readonly Random random = new Random();
@@ -55,7 +55,10 @@ namespace SmartQC.ViewModels
         public WpfPlot? PlotControl { get; set; }
         [ObservableProperty]
         public double availabilityRate;
-
+        [ObservableProperty]
+        private bool isRunning = false;
+        [ObservableProperty]
+        private bool plcRunning = false;
 
         public MainViewModel()
         {
@@ -70,10 +73,14 @@ namespace SmartQC.ViewModels
         {
             elapsedSeconds++;
 
-            // 랜덤하게 작동/정지 상태를 시뮬레이션 (예: 90% 확률로 작동 중)
-            bool isRunning = new Random().NextDouble() < 0.9;
-
-            if (isRunning)
+            // 랜덤하게 작동/정지 상태를 시뮬레이션 (예: 95% 확률로 작동 중)
+            plcRunning = random.NextDouble() < 0.95;
+            if (!plcRunning)
+            {
+                Stop(); // 수동으로 메서드 호출
+                return;
+            }
+            if (IsRunning&&plcRunning)
                 totalWorkingTime = totalWorkingTime.Add(TimeSpan.FromSeconds(1));
 
             var plannedElapsedTime = DateTime.Now - _sessionStartTime;
@@ -86,10 +93,11 @@ namespace SmartQC.ViewModels
             TimeHistory.Add(elapsedSeconds);
             AvailabilityHistory.Add(AvailabilityRate);
 
-            UpdatePlot();
+            UpdateAvailabiltyPlot();
+            HandleOpenCVResult();
         }
 
-        private void UpdatePlot()
+        private void UpdateAvailabiltyPlot()
         {
             if (AvailabilityPlotControl == null) return;
 
@@ -99,16 +107,17 @@ namespace SmartQC.ViewModels
             plt.XLabel("Elapsed Time (s)");
             plt.YLabel("Availability (%)");
             plt.Title("Real-Time Availability Simulation");
-            plt.Axes.SetLimitsY(0, 100);
+            plt.Axes.SetLimitsY(20, 100);
             AvailabilityPlotControl.Refresh();
         }
 
         public void HandleOpenCVResult()
         {
+            if (!IsRunning||!plcRunning) {return;}
             completedcount++; // 생산 수량 증가
 
             // 10% 확률로 불량 발생
-            bool isDefective = random.NextDouble() < 0.1;
+            bool isDefective = random.NextDouble() < 0.10;
 
             if (isDefective)
                 errorcounts++;
@@ -123,7 +132,8 @@ namespace SmartQC.ViewModels
             _timePoints.Add(_time);
             _defectRates.Add(defectRate);
 
-            UpdatePlot();
+            UpdateErrorPlot();
+            Updateprogressbar();
         }
 
         private void UpdateErrorPlot() // ScottPlot 갱신 메서드
@@ -137,7 +147,7 @@ namespace SmartQC.ViewModels
             plt.XLabel("Elapsed Time (s)"); // X축 라벨 설정
             plt.YLabel("Defect Rate (%)"); // Y축 라벨 설정
             plt.Title("Defect Rate Over Time"); // 그래프 제목
-            plt.Axes.SetLimitsY(60, 100); // Y축 최소값 고정
+            plt.Axes.SetLimitsY(-5, 30); // Y축 최소값 고정
 
             PlotControl.Refresh(); // 그래프 새로 고침
         }
@@ -146,24 +156,38 @@ namespace SmartQC.ViewModels
         {
             if (Totaldaycount <= 0)
             {
-                dayprogressvalue = 0;
+                Dayprogressvalue = 0;
                 return;
             }
-            dayprogressvalue = (completedcount - errorcounts) * 100 / Totaldaycount;
+            Dayprogressvalue = ((double)(completedcount - errorcounts) / Totaldaycount) * 100.0;
             if (Totalweekcount <= 0)
             {
-                weekprogressvalue = 0;
+                Weekprogressvalue = 0;
                 return;
             }
-            weekprogressvalue = (completedcount - errorcounts) * 100 / Totalweekcount;
+            Weekprogressvalue = ((double)(completedcount - errorcounts) / Totalweekcount) * 100.0;
             if (Totalmonthcount <= 0)
             {
-                monthprogressvalue = 0;
+                Monthprogressvalue = 0;
                 return;
             }
-            monthprogressvalue = (completedcount - errorcounts) * 100 / Totalmonthcount;
+            Monthprogressvalue = ((double)(completedcount - errorcounts) / Totalmonthcount) * 100.0;
 
 
+        }
+
+        [RelayCommand]
+        private void Start()
+        {
+            IsRunning = true;
+            plcRunning = true;
+        }
+
+        [RelayCommand]
+        private void Stop()
+        {
+            IsRunning = false;
+            plcRunning = false;
         }
     }
 }
