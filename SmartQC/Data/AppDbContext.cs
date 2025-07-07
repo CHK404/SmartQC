@@ -21,7 +21,7 @@ namespace SmartQC.Data
             if (!opts.IsConfigured)
             {
                 opts.UseMySQL(
-                    "Server=ip-172-31-42-81;Port=3306;Database=SmartQC;User=dbchk;Password=codingon2751;SslMode=Preferred",
+                    "Server=15.164.48.30;Port=3306;Database=SmartQC;User=dbchk;Password=codingon2751;SslMode=Preferred",
                     mySqlOptions => mySqlOptions.EnableRetryOnFailure()
                 );
             }
