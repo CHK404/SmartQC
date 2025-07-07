@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmartQC.ViewModels
 {
-    internal class MainViewModel
+    public class MainViewModel
     {
+
+
     }
 }
