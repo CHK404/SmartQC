@@ -12,6 +12,7 @@ using SmartQC.Models;
 using ScottPlot;
 using ScottPlot.WPF;
 using System.Reflection.Emit;
+using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 
 namespace SmartQC.ViewModels
@@ -37,7 +38,10 @@ namespace SmartQC.ViewModels
         public int errorscount;
         [ObservableProperty]
         public int completecount;
-
+        [ObservableProperty]
+        public int needtocomplete = 40;
+        [ObservableProperty]
+        public int progressValue = 0;
 
         public WorkerVeiwModel()
         {
@@ -58,21 +62,28 @@ namespace SmartQC.ViewModels
             Contamination_level = Math.Round(random.NextDouble() * 14 + 3.0, 1); 
             Drability = true; 
         }
-    
-        public void HandleOpenCVResult(bool isDefect)
+
+        public void HandleOpenCVResult()
         {
-            completecount++; // 총 생산 수 증가
+            completecount++; // 생산 수량 증가
 
-            if (isDefect) // 불량이면
-                errorscount++; // 불량 수 증가
+            // 10% 확률로 불량 발생
+            bool isDefective = random.NextDouble() < 0.1;
 
-            double defectRate = (double)errorscount / completecount * 100.0; // 불량률 계산
+            if (isDefective)
+                errorscount++;
 
-            _time = (DateTime.Now - _startTime).TotalSeconds; // 경과 시간 계산 (초 단위)
-            _timePoints.Add(_time); // 시간 리스트에 추가
-            _defectRates.Add(defectRate); // 불량률 리스트에 추가
+            // 불량률 계산 (0으로 나누기 방지)
+            double defectRate = completecount > 0
+                ? (double)errorscount / completecount * 100.0
+                : 0;
 
-            UpdatePlot(); // 그래프 갱신
+            // 시간 경과
+            _time = (DateTime.Now - _startTime).TotalSeconds;
+            _timePoints.Add(_time);
+            _defectRates.Add(defectRate);
+
+            UpdatePlot();
         }
 
         private void UpdatePlot() // ScottPlot 갱신 메서드
@@ -92,6 +103,15 @@ namespace SmartQC.ViewModels
         }
 
 
-
+        [RelayCommand]
+        private void Updateprogressbar() 
+        {
+            if (Needtocomplete <= 0) 
+            {
+                progressValue = 0;
+                return;
+            }
+            progressValue = (completecount - errorscount)*100 / Needtocomplete;
+        }
     }
 }

@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using SmartQC.ViewModels;
 
 namespace SmartQC.Views
 {
@@ -22,6 +23,7 @@ namespace SmartQC.Views
         public WorkerView()
         {
             InitializeComponent();
+            this.DataContext = new WorkerVeiwModel();
         }
     }
 }
