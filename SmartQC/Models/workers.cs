@@ -17,6 +17,7 @@ namespace SmartQC.Models
         public bool Durability { get; set; } //랜덤 확률 줘서
         public string DurationText => Durability ? "양호" : "불량";
         public double Contamination_level { get; set; } //랜덤 수
+        public int Needtocomplete { get; set; }
 
     }
 }

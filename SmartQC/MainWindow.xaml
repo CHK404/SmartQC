@@ -2,6 +2,7 @@
     <Window x:Class="SmartQC.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Wpf="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SmartQC"
@@ -113,10 +114,10 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="0" >
                 <Border Width="380" Height="280" Background="White"  BorderBrush="Black" BorderThickness="1" CornerRadius="12" Padding="10" Margin="10">
-                    <TextBlock Text="그래프1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Wpf:WpfPlot x:Name="AvailabilityPlotControl" Margin="0,0,0,-2" />
                 </Border>
                 <Border Width="380" Height="280" Background="White" BorderBrush="Black" BorderThickness="1" CornerRadius="12" Margin="10">
-                    <TextBlock Text="그래프2" HorizontalAlignment="Center" VerticalAlignment="center"/>
+                    <Wpf:WpfPlot x:Name="PlotControl" Margin="0,0,0,-2" />
                 </Border>
             </StackPanel>
 
@@ -137,11 +138,17 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 0 20">
-                    <ProgressBar x:Name="ProgressBarDay" Width="550" Height="50" Style="{StaticResource AnimatedProgressBar}" Minimum="0" Maximum="100" Value="0" Margin="5" 
+                    <ProgressBar x:Name="ProgressBarDay" Width="550" Height="50" Style="{StaticResource AnimatedProgressBar}"
+                                 Value="{Binding Dayprogressvalue}"
+                                 Minimum="0" Maximum="100" Margin="5" 
                                  ValueChanged="ProgressBar_ValueChanged"/>
-                    <ProgressBar x:Name="ProgressBarWeek" Width="550" Height="50" Style="{StaticResource AnimatedProgressBar}" Minimum="0" Maximum="100" Value="0" Margin="5"
+                    <ProgressBar x:Name="ProgressBarWeek" Width="550" Height="50" Style="{StaticResource AnimatedProgressBar}"
+                                 Value="{Binding Weekprogressvalue}"
+                                 Minimum="0" Maximum="100"  Margin="5"
                                  ValueChanged="ProgressBar_ValueChanged"/>
-                    <ProgressBar x:Name="ProgressBarMonth" Width="550" Height="50" Style="{StaticResource AnimatedProgressBar}" Minimum="0" Maximum="100" Value="0" Margin="5" 
+                    <ProgressBar x:Name="ProgressBarMonth" Width="550" Height="50" Style="{StaticResource AnimatedProgressBar}"
+                                 Value="{Binding Monthprogressvalue}"
+                                 Minimum="0" Maximum="100"  Margin="5" 
                                  ValueChanged="ProgressBar_ValueChanged"/>
                 </StackPanel>
 
