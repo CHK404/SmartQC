@@ -18,6 +18,7 @@ namespace SmartQC.Views
     /// <summary>
     /// Interaction logic for WorkerView.xaml
     /// </summary>
+    /// private MainViewModel viewModel;
     public partial class WorkerView : Window
     {
         public WorkerView()
