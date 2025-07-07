@@ -24,11 +24,23 @@ namespace SmartQC.ViewModels
             get => _selectedProduct;
             set { _selectedProduct = value; OnPropertyChanged(); }
         }
+        private ProductData? _addItem;
+        public ProductData? AddItem
+        {
+            get => _addItem;
+            set { _addItem = value; OnPropertyChanged(); }
+        }
         private ProductData? _editItem;
         public ProductData? EditItem
         {
             get => _editItem;
             set { _editItem = value; OnPropertyChanged(); }
+        }
+        private bool _isAddPopupOpen;
+        public bool IsAddPopupOpen
+        {
+            get => _isAddPopupOpen;
+            set { _isAddPopupOpen = value; OnPropertyChanged(); }
         }
         private bool _isEditPopupOpen;
         public bool IsEditPopupOpen
@@ -42,7 +54,9 @@ namespace SmartQC.ViewModels
             get => _isDetailPopupOpen;
             set { _isDetailPopupOpen = value; OnPropertyChanged(); }
         }
-
+        public ICommand OpenAddPopupCommand { get; }
+        public ICommand SaveAddCommand { get; }
+        public ICommand CancelAddCommand { get; }
         public ICommand OpenEditPopupCommand { get; }
         public ICommand SaveEditCommand { get; }
         public ICommand CancelEditCommand { get; }
@@ -55,6 +69,38 @@ namespace SmartQC.ViewModels
             Products = new ObservableCollection<ProductData>(LoadProducts());
             Details = new ObservableCollection<ProductDetail>();
 
+            OpenAddPopupCommand = new RelayCommand(
+                _ =>
+                {
+                    AddItem = new ProductData
+                    {
+                        ProductName = string.Empty,
+                        Quantity = 0,
+                        Defective = 0,
+                        ProductInfo = string.Empty,
+                        DeliveryDueDate = null,
+                        RequiredQuantity = 0
+                    };
+                    IsAddPopupOpen = true;
+                },
+                _ => true
+            );
+            SaveAddCommand = new RelayCommand(
+                _ =>
+                {
+                    using var add = new AppDbContext();
+                    add.ProductData.Add(AddItem!);
+                    add.SaveChanges();
+
+                    Products.Add(AddItem!);
+                    IsAddPopupOpen = false;
+                },
+                _ => AddItem != null && !string.IsNullOrWhiteSpace(AddItem.ProductName)
+            );
+            CancelAddCommand = new RelayCommand(
+                _ => IsAddPopupOpen = false
+            );
+
             OpenEditPopupCommand = new RelayCommand(
                 o =>
                 {
@@ -64,7 +110,9 @@ namespace SmartQC.ViewModels
                         {
                             ProductName = pd.ProductName,
                             Quantity = pd.Quantity,
-                            Defective = pd.Defective
+                            Defective = pd.Defective,
+                            RequiredQuantity = pd.RequiredQuantity,
+                            DeliveryDueDate = pd.DeliveryDueDate
                         };
                         IsEditPopupOpen = true;
                     }
@@ -80,6 +128,20 @@ namespace SmartQC.ViewModels
                         SelectedProduct.ProductName = EditItem.ProductName;
                         SelectedProduct.Quantity = EditItem.Quantity;
                         SelectedProduct.Defective = EditItem.Defective;
+                        SelectedProduct.RequiredQuantity = EditItem.RequiredQuantity;
+                        SelectedProduct.DeliveryDueDate = EditItem.DeliveryDueDate;
+
+                        using var context = new AppDbContext();
+
+                        var entity = context.ProductData
+                                .Single(p => p.ProductName == SelectedProduct.ProductName);
+
+                        entity.Quantity = EditItem.Quantity;
+                        entity.Defective = EditItem.Defective;
+                        entity.RequiredQuantity = EditItem.RequiredQuantity;
+                        entity.DeliveryDueDate = EditItem?.DeliveryDueDate;
+
+                        context.SaveChanges();
                     }
                     IsEditPopupOpen = false;
 
@@ -89,7 +151,8 @@ namespace SmartQC.ViewModels
             );
 
             CancelEditCommand = new RelayCommand(
-                o => { IsEditPopupOpen = false; }
+                _ => CancelEdit(),
+                _ => true
             );
 
             DeleteCommand = new RelayCommand(
@@ -107,24 +170,38 @@ namespace SmartQC.ViewModels
         }
         private IEnumerable<ProductData> LoadProducts()
         {
-            return new List<ProductData>
+            using var context = new AppDbContext();
+
+            var list = context.ProductData.Select(p => new ProductData()
             {
-            new ProductData { ProductName = "노트북", Quantity = 15, Defective = 1 },
-            new ProductData { ProductName = "무선 마우스", Quantity = 40, Defective = 2 },
-            new ProductData { ProductName = "키보드", Quantity = 25, Defective = 0 },
-            new ProductData { ProductName = "헤드폰", Quantity = 30, Defective = 3 },
-            new ProductData { ProductName = "웹캠", Quantity = 20, Defective = 1 },
-            new ProductData { ProductName = "USB 케이블", Quantity = 100, Defective = 5 },
-            new ProductData { ProductName = "외장하드", Quantity = 10, Defective = 0 },
-            new ProductData { ProductName = "모니터", Quantity = 12, Defective = 1 }
-            };
+                ProductName = p.ProductName,
+                Quantity = p.Quantity,
+                Defective = p.Defective,
+                ProductInfo = p.ProductInfo,
+                DeliveryDueDate = p.DeliveryDueDate,
+                RequiredQuantity = p.RequiredQuantity,
+            }).ToList();
+
+            return list;
         }
         private void Delete(ProductData? item)
         {
-            if (item == null) return;
-            if (MessageBox.Show($"[{item.ProductName}] 삭제하시겠습니까?", "확인",
-                    MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                Products.Remove(item);
+            if (item == null)
+                return;
+
+            if (MessageBox.Show($"[{item.ProductName}] 삭제하시겠습니까?",
+                                "확인", MessageBoxButton.YesNo)
+                != MessageBoxResult.Yes)
+                return;
+            using var context = new AppDbContext();
+            var entity = context.ProductData
+                                .SingleOrDefault(p => p.ProductName == item.ProductName);
+            if (entity != null)
+            {
+                context.ProductData.Remove(entity);
+                context.SaveChanges();
+            }
+            Products.Remove(item);
         }
         private void ShowDetails(ProductData? product)
         {
@@ -132,18 +209,21 @@ namespace SmartQC.ViewModels
 
             SelectedProduct = product;
             Details.Clear();
-            for (int i = 1; i <= 7; i++)
+            
+            using var context = new AppDbContext();
+            var details = context.ProductDetail.Where(d => d.ProductName == product.ProductName).ToList();
+
+            foreach (var detail in details)
             {
-                Details.Add(new ProductDetail
-                {
-                    SerialNumber = $"{product.ProductName?.ToUpper()}-{i:000}",
-                    ProductName = product.ProductName,
-                    UserName = $"User{i}",
-                    Defection = (i % 3 == 0)
-                });
+                Details.Add(detail);
             }
 
             IsDetailPopupOpen = true;
+        }
+        private void CancelEdit()
+        {
+            IsEditPopupOpen = false;
+            EditItem = null;
         }
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propName = "")

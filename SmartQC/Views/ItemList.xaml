@@ -44,9 +44,13 @@
 
         <DataGrid Grid.Row="0" ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" Margin="10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ProductName" Binding="{Binding ProductName}" />
-                <DataGridTextColumn Header="Defective" Binding="{Binding Defective}" />
-                <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" />
+                <DataGridTextColumn Header="제품명" Binding="{Binding ProductName}" />
+                <DataGridTextColumn Header="불량품 수" Binding="{Binding Defective}" />
+                <DataGridTextColumn Header="요구 수량" Binding="{Binding RequiredQuantity}" />
+                <DataGridTextColumn Header="납품 가능 수" Binding="{Binding DeliverableQuantity}" />
+                <DataGridTextColumn Header="총 수량" Binding="{Binding Quantity}" />
+                <DataGridTextColumn Header="납품 기한" Binding="{Binding DeliveryDueDate, StringFormat='{}{0:yyyy-MM-dd}'}" />
+                <DataGridTextColumn Header="제품 정보" Binding="{Binding ProductInfo}" />
             </DataGrid.Columns>
             <DataGrid.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick"
@@ -55,6 +59,12 @@
             </DataGrid.InputBindings>
         </DataGrid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Style="{StaticResource ListButtonStyle}"
+              Content="추가"
+              Command="{Binding OpenAddPopupCommand}"
+              Margin="10"
+              BorderThickness="0"
+              FontSize="18"/>
             <Button Style="{StaticResource ListButtonStyle}"
               Content="수정"
               Command="{Binding OpenEditPopupCommand}"
@@ -72,6 +82,44 @@
               FontSize="18"
               Foreground="White"/>
         </StackPanel>
+        <Popup IsOpen="{Binding IsAddPopupOpen}"
+           Placement="Center"
+           StaysOpen="False">
+        <Border Background="White" Padding="20" CornerRadius="8">
+            <StackPanel Width="300">
+                <TextBlock Text="제품 추가" FontWeight="Bold" Margin="0,0,0,10" FontSize="16"/>
+                <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <TextBlock Text="이름:" Width="80" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding AddItem.ProductName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="180"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <TextBlock Text="총 수량:" Width="80" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding AddItem.Quantity, Mode=TwoWay}" Width="180"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <TextBlock Text="불량품 수:" Width="80" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding AddItem.Defective, Mode=TwoWay}" Width="180"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <TextBlock Text="요구 수량:" Width="80" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding AddItem.RequiredQuantity, Mode=TwoWay}" Width="180"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <TextBlock Text="제품 정보:" Width="80" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding AddItem.ProductInfo, Mode=TwoWay}" Width="180" Height="50"
+                                 TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" />
+                </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <TextBlock Text="납품 기한:" Width="80" VerticalAlignment="Center"/>
+                    <DatePicker Text="{Binding AddItem.DeliveryDueDate, Mode=TwoWay, StringFormat='{}{0:yyyy-MM-dd}'}" Width="180"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+                    <Button Content="저장" Width="80" Margin="0,0,10,0" Command="{Binding SaveAddCommand}"/>
+                    <Button Content="취소" Width="80" Command="{Binding CancelAddCommand}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        </Popup>
         <Popup IsOpen="{Binding IsEditPopupOpen}"
            Placement="Center"
            StaysOpen="False">
@@ -80,15 +128,23 @@
                     <TextBlock Text="제품 정보 수정" FontWeight="Bold" Margin="0,0,0,10" FontSize="16"/>
                     <StackPanel Orientation="Horizontal" Margin="0,5">
                         <TextBlock Text="이름:" Width="80" VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding EditItem.ProductName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="180"/>
+                        <TextBox Text="{Binding EditItem.ProductName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="180" IsReadOnly="True"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,5">
-                        <TextBlock Text="수량:" Width="80" VerticalAlignment="Center"/>
+                        <TextBlock Text="총 수량:" Width="80" VerticalAlignment="Center"/>
                         <TextBox Text="{Binding EditItem.Quantity, Mode=TwoWay}" Width="180"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,5">
-                        <TextBlock Text="불량:" Width="80" VerticalAlignment="Center"/>
+                        <TextBlock Text="불량품 수:" Width="80" VerticalAlignment="Center"/>
                         <TextBox Text="{Binding EditItem.Defective, Mode=TwoWay}" Width="180"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                        <TextBlock Text="요구 수량:" Width="80" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding EditItem.RequiredQuantity, Mode=TwoWay}" Width="180"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                        <TextBlock Text="납품 기한:" Width="80" VerticalAlignment="Center"/>
+                        <DatePicker Text="{Binding EditItem.DeliveryDueDate, Mode=TwoWay, StringFormat='{}{0:yyyy-MM-dd}'}" Width="180"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
                         <Button Content="저장" Width="80" Margin="0,0,10,0" Command="{Binding SaveEditCommand}"/>
@@ -101,12 +157,8 @@
             <Border Background="White" Padding="10">
                 <StackPanel>
                     <TextBlock Text="{Binding SelectedProduct.ProductName}" FontSize="16"/>
-
                     <DataGrid ItemsSource="{Binding Details}" AutoGenerateColumns="True"/>
-
-                    <Button Content="닫기"
-              Command="{Binding CloseDetailPopupCommand}"
-              Margin="0,10,0,0"/>
+                    <Button Content="닫기" Command="{Binding CloseDetailPopupCommand}" Margin="0,10,0,0"/>
                 </StackPanel>
             </Border>
         </Popup>
