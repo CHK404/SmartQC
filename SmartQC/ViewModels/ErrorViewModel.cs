@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartQC.ViewModels
 {
-    internal class ProductViewModel
+    internal class ErrorViewModel
     {
     }
 }
