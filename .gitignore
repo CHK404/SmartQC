@@ -21,3 +21,4 @@ obj/
 *.jpeg
 *.gif
 TestResult*/
+smartqc_env/
