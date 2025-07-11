@@ -28,8 +28,8 @@ def insert_user_embedding(user_name, face_id):
         print("[ERROR] 임베딩이 비어 있습니다. 저장하지 않음.")
         return
         
-    sql = "INSERT INTO UserData (UserName, Department, Position, FaceID) VALUES (%s,%s,%s, %s)"
-    data = (user_info["name"],user_info["department"], user_info["position"], face_id_bytes)
+    sql = "INSERT INTO UserData (UserName, Department, Position, FaceID, IsAdmin) VALUES (%s,%s,%s,%s,%s)"
+    data = (user_info["name"],user_info["department"], user_info["position"], face_id_bytes, is_admin)
     cursor.execute(sql,data)
     conn.commit()
     cursor.close()
@@ -86,4 +86,8 @@ if __name__ == "__main__":
    if any(v == "" for v in user_info.values()):
        print("[ERROR] 모든 항목을 입력해 주세요.")
    else:
+       
+       admin_input = print("이 사용자가 관리자 입니까? (y / n)").lower().strip()
+       is_admin = 1 if admin_input == "y" else 0 
+       
        capture_and_register(user_info, capture_time=10,delay=0.5)
