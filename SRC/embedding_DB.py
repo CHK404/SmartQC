@@ -35,6 +35,15 @@ def insert_user_embedding(user_name, face_id):
     cursor.close()
     conn.close()
 
+def set_login_flag(user_name, flag=1):
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+    sql = "UPDATE UserData SET IsLoggedIn = %s WHERE UserName = %s"
+    cursor.execute(sql, (flag, user_name))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 def capture_and_register(user_name, capture_time=10, delay=0.5):
     cap = cv2.VideoCapture(1)
     if not cap.isOpened():
@@ -75,6 +84,9 @@ def capture_and_register(user_name, capture_time=10, delay=0.5):
     mean_embedding = np.mean(embeddings, axis=0)
     insert_user_embedding(user_info, mean_embedding)
     print(f"[INFO] {user_name} 얼굴 등록 완료, DB에 저장됨.")
+    
+    set_login_flag(user_info["name"], flag=1)
+    print("[INFO] 로그인되었습니다.")
 
 if __name__ == "__main__":
    user_info = { 
