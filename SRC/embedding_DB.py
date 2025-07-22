@@ -91,17 +91,13 @@ def capture_and_register(user_data, capture_time=10, delay=0.5):
     print(f"[INFO] {user_data['name']} 로그인되었습니다.")
 
 if __name__ == "__main__":
-   user_info = { 
+    user_info = { 
         "name" : input("등록할 이름을 입력하세요: ").strip(),
         "department" : input("부서를 입력해 주세요.").strip(),
         "position" : input("직책을 입력해 주세요.").strip()
     }
    
-   if any(v == "" for v in user_info.values()):
+    if any(v == "" for v in user_info.values()):
        print("[ERROR] 모든 항목을 입력해 주세요.")
-   else:
        
-       admin_input = input("이 사용자가 관리자 입니까? (y / n)").lower().strip()
-       is_admin = 1 if admin_input == "y" else 0 
-       
-       capture_and_register(user_info, capture_time=10,delay=0.5)
+    capture_and_register(user_info, capture_time=10,delay=0.5)
