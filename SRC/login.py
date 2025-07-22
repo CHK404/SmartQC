@@ -46,6 +46,15 @@ def load_registered_users():
     conn.close()
     return users
 
+def set_login_flag(user_name, flag=1):
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+    sql = "UPDATE UserData SET IsLoggedIn = %s WHERE UserName = %s"
+    cursor.execute(sql, (flag, user_name))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
 def put_text_kr(img, text, pos, font_path='C:/Windows/Fonts/malgun.ttf', font_size=30, color=(255,255,255)):
     img_pil = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     draw = ImageDraw.Draw(img_pil)
@@ -99,6 +108,8 @@ def login_loop():
                 frame = put_text_kr(frame, text, (20, 50), font_size=28, color=color)
                 cv2.imshow("Face Login", frame)
                 cv2.waitKey(2000) 
+                set_login_flag(user_info["name"], flag=1)
+                print("[INFO] 로그인되었습니다.")
                 print(f"[INFO] {selected_user['name']} 로그인 성공, 프로그램 종료합니다.")
                 break
             else:
