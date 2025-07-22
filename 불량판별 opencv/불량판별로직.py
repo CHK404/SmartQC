@@ -1,5 +1,6 @@
 from ultralytics import YOLO
 import cv2
+import mysql.connector
 
 model = YOLO("C:/Users/서민재/runs/detect/train7/weights/best.pt")  # 전체 경로
 cap = cv2.VideoCapture(0)
