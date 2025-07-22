@@ -108,7 +108,7 @@ def login_loop():
                 frame = put_text_kr(frame, text, (20, 50), font_size=28, color=color)
                 cv2.imshow("Face Login", frame)
                 cv2.waitKey(2000) 
-                set_login_flag(user_info["name"], flag=1)
+                set_login_flag(selected_user["name"], flag=1)
                 print("[INFO] 로그인되었습니다.")
                 print(f"[INFO] {selected_user['name']} 로그인 성공, 프로그램 종료합니다.")
                 break
