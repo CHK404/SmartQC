@@ -100,4 +100,8 @@ if __name__ == "__main__":
    if any(v == "" for v in user_info.values()):
        print("[ERROR] 모든 항목을 입력해 주세요.")
    else:
+       
+       admin_input = input("이 사용자가 관리자 입니까? (y / n)").lower().strip()
+       is_admin = 1 if admin_input == "y" else 0 
+       
        capture_and_register(user_info, capture_time=10,delay=0.5)

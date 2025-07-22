@@ -28,9 +28,9 @@ def cosine_similarity(a, b):
 def load_registered_users():
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
-    cursor.execute("SELECT UserName, Department, Position, FaceID FROM UserData")
+    cursor.execute("SELECT UserName, Department, Position, FaceID, IsLoggedIn FROM UserData")
     users = []
-    for username, department, position, faceid_bytes in cursor.fetchall():
+    for username, department, position, faceid_bytes, isLoggedIn in cursor.fetchall():
         if faceid_bytes is None:
             print(f"[WARNING] 사용자 '{username}' 의 FaceID가 없습니다. 건너뜁니다.")
             continue
@@ -39,7 +39,8 @@ def load_registered_users():
             'name': username,
             'department': department,
             'position': position,
-            'embedding': embedding
+            'embedding': embedding,
+            'isLoggedIn' : isLoggedIn
         })
     cursor.close()
     conn.close()
@@ -107,7 +108,7 @@ def login_loop():
                 frame = put_text_kr(frame, text, (20, 50), font_size=28, color=color)
                 cv2.imshow("Face Login", frame)
                 cv2.waitKey(2000) 
-                set_login_flag(user_info["name"], flag=1)
+                set_login_flag(selected_user["name"], flag=1)
                 print("[INFO] 로그인되었습니다.")
                 print(f"[INFO] {selected_user['name']} 로그인 성공, 프로그램 종료합니다.")
                 break
