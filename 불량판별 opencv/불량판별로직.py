@@ -5,6 +5,14 @@ import mysql.connector
 model = YOLO("C:/Users/서민재/runs/detect/train7/weights/best.pt")  # 전체 경로
 cap = cv2.VideoCapture(0)
 
+db_config = {
+    'host': '15.164.48.30',
+    'port': 3306,
+    'user': 'dbchk',
+    'password': 'codingon2751',
+    'database': 'SmartQC'
+}
+
 while True:
     ret, frame = cap.read()
     if not ret:
