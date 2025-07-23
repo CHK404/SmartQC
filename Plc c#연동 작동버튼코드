@@ -1,0 +1,162 @@
+using System;
+using System.Collections.Generic;
+using System.Net.Sockets;
+using System.Windows.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using NModbus;
+using ScottPlot;
+using ScottPlot.WPF;
+
+namespace SmartQC.ViewModels
+{
+    public partial class WorkerVeiwModel : ObservableObject
+    {
+        // 📌 Modbus 통신 필드
+        private TcpClient? _plcClient;
+        private IModbusMaster? _modbusMaster;
+        private const string PlcIp = "192.168.0.10"; // PLC IP
+        private const int PlcPort = 502;             // Modbus TCP 포트
+        private const byte SlaveId = 1;              // PLC 슬레이브 ID
+
+        // 📌 타이머 및 시각화 관련
+        private readonly DispatcherTimer _timer = new DispatcherTimer();
+        private readonly Random random = new Random();
+        private readonly List<double> _defectRates = new List<double>();
+        private readonly List<double> _timePoints = new List<double>();
+        private double _time = 0;
+        private DateTime _startTime = DateTime.Now;
+        public WpfPlot? PlotControl { get; set; }
+
+        // 📌 바인딩용 속성들
+        [ObservableProperty] public double temperature;
+        [ObservableProperty] public double humidity;
+        [ObservableProperty] public double contamination_level;
+        [ObservableProperty] public bool drability;
+        [ObservableProperty] public int errorscount;
+        [ObservableProperty] public int completecount;
+        [ObservableProperty] public int needtocomplete = 40;
+        [ObservableProperty] public int progressValue = 0;
+
+        // 📌 생성자
+        public WorkerVeiwModel()
+        {
+            // PLC 연결 시도
+            try
+            {
+                _plcClient = new TcpClient(PlcIp, PlcPort);
+                var factory = new ModbusFactory();
+                _modbusMaster = factory.CreateMaster(_plcClient);
+                Console.WriteLine("✅ PLC 연결 성공");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ PLC 연결 실패: " + ex.Message);
+            }
+
+            // 타이머 설정
+            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Tick += Ontimer;
+            _timer.Start();
+        }
+
+        // 📌 주기적으로 값 생성 (예시로 유지)
+        public void Ontimer(object sender, EventArgs e)
+        {
+            MakeValue(); // Modbus 기반이면 이 부분도 실제 센서로 교체 가능
+        }
+
+        // 📌 임시 랜덤값 (원하면 삭제 가능)
+        public void MakeValue()
+        {
+            Temperature = Math.Round(random.NextDouble() * 10 + 19.0, 1);
+            Humidity = Math.Round(random.NextDouble() * 30 + 35.0, 1);
+            Contamination_level = Math.Round(random.NextDouble() * 14 + 3.0, 1);
+            Drability = true;
+        }
+
+        // 📌 OpenCV 불량 결과 처리
+        public void HandleOpenCVResult()
+        {
+            completecount++;
+
+            bool isDefective = random.NextDouble() < 0.1;
+            if (isDefective)
+                errorscount++;
+
+            double defectRate = completecount > 0
+                ? (double)errorscount / completecount * 100.0
+                : 0;
+
+            _time = (DateTime.Now - _startTime).TotalSeconds;
+            _timePoints.Add(_time);
+            _defectRates.Add(defectRate);
+
+            UpdatePlot();
+        }
+
+        // 📌 ScottPlot 갱신
+        private void UpdatePlot()
+        {
+            if (PlotControl == null) return;
+
+            var plt = PlotControl.Plot;
+            plt.Clear();
+            plt.Add.Scatter(xs: _timePoints.ToArray(), ys: _defectRates.ToArray());
+            plt.XLabel("Elapsed Time (s)");
+            plt.YLabel("Defect Rate (%)");
+            plt.Title("Defect Rate Over Time");
+            plt.Axes.SetLimitsY(60, 100);
+
+            PlotControl.Refresh();
+        }
+
+        // 📌 진행률 계산
+        [RelayCommand]
+        private void Updateprogressbar()
+        {
+            if (Needtocomplete <= 0)
+            {
+                progressValue = 0;
+                return;
+            }
+            progressValue = (completecount - errorscount) * 100 / Needtocomplete;
+        }
+
+        // ✅ 시작 버튼 → MX0 (Coil 0) ON
+        [RelayCommand]
+        private void StartCommand()
+        {
+            if (_modbusMaster == null) return;
+
+            try
+            {
+                _modbusMaster.WriteSingleCoil(SlaveId, 0, true);  // MX0 ON
+                _modbusMaster.WriteSingleCoil(SlaveId, 1, false); // MX1 OFF
+                Console.WriteLine("▶️ 작동 시작 신호 전송 (MX0 ON)");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ 시작 신호 실패: " + ex.Message);
+            }
+        }
+
+        // ✅ 정지 버튼 → MX1 (Coil 1) ON
+        [RelayCommand]
+        private void StopCommand()
+        {
+            if (_modbusMaster == null) return;
+
+            try
+            {
+                _modbusMaster.WriteSingleCoil(SlaveId, 0, false); // MX0 OFF
+                _modbusMaster.WriteSingleCoil(SlaveId, 1, true);  // MX1 ON
+                Console.WriteLine("⏹ 전체 정지 신호 전송 (MX1 ON)");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ 정지 신호 실패: " + ex.Message);
+            }
+        }
+    }
+}
