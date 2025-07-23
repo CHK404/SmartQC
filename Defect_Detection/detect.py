@@ -28,8 +28,11 @@ processed_ids = set()
 
 for result in model.track(source=0, stream=True, conf=0.3):
     frame = result.orig_img
+    
     for box in result.boxes:
-        tid   = int(box.id)
+        if box.id is None:
+            continue
+        tid = int(box.id)
         if tid in processed_ids:
             continue
         processed_ids.add(tid)
@@ -54,10 +57,11 @@ for result in model.track(source=0, stream=True, conf=0.3):
             continue
 
         serial_number = str(uuid.uuid4())
+        print(f"[DEBUG] insert_product_detail: {serial_number}, {user_name}, {product_name}, {is_defect}")
+        upsert_product_data(product_name, product_info, delivery_due, required_quantity, is_defect)
+        insert_product_detail(serial_number, user_name, product_name, is_defect)
         if is_defect:
             log_error(serial_number, defect_type)
-        insert_product_detail(serial_number, user_name, product_name, is_defect)
-        upsert_product_data(product_name, product_info, delivery_due, required_quantity, is_defect)
 
         color = (0, 0, 255) if is_defect else (255, 0, 0)
         label = f"{'불량' if is_defect else '정상'} ({conf:.2f})"
@@ -67,5 +71,5 @@ for result in model.track(source=0, stream=True, conf=0.3):
     cv2.imshow("Track & Detect", frame)
     if cv2.waitKey(1) & 0xFF == 27:
         break
-
+    
 cv2.destroyAllWindows()
