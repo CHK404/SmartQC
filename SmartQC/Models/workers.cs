@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartQC.Models
 {
-    public class workers
+    public class Workers
     {
         public int errorscount { get; set; } //OpenCV or SQL 에서 받아오는 값
         public int completecount { get; set; } //Opencv or SQL 에서 받아오는 값

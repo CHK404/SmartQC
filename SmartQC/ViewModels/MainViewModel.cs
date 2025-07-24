@@ -18,8 +18,6 @@ namespace SmartQC.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
-
-
         private readonly DispatcherTimer _timer = new();
         private double elapsedSeconds = 0;
         [ObservableProperty]
