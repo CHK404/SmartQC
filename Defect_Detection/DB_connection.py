@@ -60,7 +60,19 @@ def insert_product_detail(
         conn.commit()
     finally:
         conn.close()
-
+        
+def product_exists(product_name: str) -> bool:
+    conn = get_connection()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "SELECT 1 FROM ProductData WHERE ProductName = %s LIMIT 1",
+                (product_name,)
+            )
+            return cursor.fetchone() is not None
+    finally:
+        conn.close()
+        
 def upsert_product_data(
     product_name: str,
     product_info: str,
