@@ -49,15 +49,15 @@ def set_login_flag(user_name, flag=1):
     conn.close()
 
 def capture_and_register(user_data=None, capture_time=10, delay=0.5):
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("[ERROR] 카메라를 켜주세요.")
         return
     if user_data is None:
         user_data = {
-            "name":       input("등록할 이름을 입력하세요: ").strip(),
+            "name": input("등록할 이름을 입력하세요: ").strip(),
             "department": input("부서를 입력해 주세요: ").strip(),
-            "position":   input("직책을 입력해 주세요: ").strip(),
+            "position": input("직책을 입력해 주세요: ").strip(),
         }
         if any(v == "" for v in user_data.values()):
             print("[ERROR] 모든 항목을 입력해 주세요.")

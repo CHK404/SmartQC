@@ -16,20 +16,6 @@ _POOL = pooling.MySQLConnectionPool(
 def get_connection():
     return _POOL.get_connection()
 
-def get_logged_in_user() -> str:
-    conn = get_connection()
-    try:
-        with conn.cursor() as cursor:
-            cursor.execute(
-                "SELECT UserName FROM UserData WHERE IsLoggedIn = 1 LIMIT 1"
-            )
-            row = cursor.fetchone()
-            if row:
-                return row[0]
-    finally:
-        conn.close()
-    raise ValueError("로그인된 사용자가 없습니다.")
-
 def log_error(serial_number: str, error_type: str) -> str:
     conn = get_connection()
     error_code = str(uuid.uuid4())

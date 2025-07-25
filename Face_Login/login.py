@@ -79,7 +79,7 @@ def login_loop():
     selected_user = select_user(users)
     print(f"[INFO] 선택된 사용자: {selected_user['name']}")
 
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("[ERROR] 카메라를 열지 않았습니다.")
         return False
@@ -103,6 +103,7 @@ def login_loop():
                 cv2.waitKey(2000) 
                 set_login_flag(selected_user["name"], flag=1)
                 print(f"[INFO] {selected_user['name']} 로그인되었습니다.")
+                cv2.destroyAllWindows()
                 return True
             else:
                 frame = put_text_kr(frame, f"얼굴 불일치 ({similarity:.2f})", (20,50), font_size=24, color=(0,0,255))

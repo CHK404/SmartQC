@@ -18,7 +18,6 @@ def pipeline_main():
     finally:
         set_logout(user_name)
         print(f"{user_name} 님 로그아웃 완료.")
-
     
 if __name__ == "__main__":
     pipeline_main()
