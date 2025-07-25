@@ -11,9 +11,9 @@ from Face_Login.embedding_DB import set_logout
 
 def pipeline_main():
     user_name = face_main()
-    
-    detector = DefectDetector(user_name)        
+      
     try:
+        detector = DefectDetector(user_name)
         detector.run()
     finally:
         set_logout(user_name)
