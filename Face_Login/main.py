@@ -1,5 +1,5 @@
-from login import login_loop
-from embedding_DB import capture_and_register
+from .login import login_loop
+from .embedding_DB import capture_and_register
 
 def main():
     while True:

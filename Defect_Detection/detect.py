@@ -4,7 +4,7 @@ import cv2
 import uuid
 import time
 import datetime
-from DB_connection import (log_error, insert_product_detail, upsert_product_data, product_exists)
+from .DB_connection import (log_error, insert_product_detail, upsert_product_data, product_exists)
 
 class DefectDetector:
     def __init__(self, user_name):

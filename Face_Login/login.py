@@ -3,7 +3,6 @@ import numpy as np
 from insightface.app import FaceAnalysis
 from numpy.linalg import norm
 import mysql.connector
-import time
 from PIL import ImageFont, ImageDraw, Image
 
 db_config = {
@@ -35,13 +34,7 @@ def load_registered_users():
             print(f"[WARNING] 사용자 '{username}' 의 FaceID가 없습니다. 건너뜁니다.")
             continue
         embedding = np.frombuffer(faceid_bytes, dtype=np.float32)
-        users.append({
-            'name': username,
-            'department': department,
-            'position': position,
-            'embedding': embedding,
-            'isLoggedIn' : isLoggedIn
-        })
+        users.append({'name': username, 'department': department, 'position': position, 'embedding': embedding, 'isLoggedIn' : isLoggedIn})
     cursor.close()
     conn.close()
     return users

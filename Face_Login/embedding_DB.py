@@ -48,12 +48,20 @@ def set_login_flag(user_name, flag=1):
     cursor.close()
     conn.close()
 
-def capture_and_register(user_data, capture_time=10, delay=0.5):
+def capture_and_register(user_data=None, capture_time=10, delay=0.5):
     cap = cv2.VideoCapture(1)
     if not cap.isOpened():
         print("[ERROR] 카메라를 켜주세요.")
         return
-
+    if user_data is None:
+        user_data = {
+            "name":       input("등록할 이름을 입력하세요: ").strip(),
+            "department": input("부서를 입력해 주세요: ").strip(),
+            "position":   input("직책을 입력해 주세요: ").strip(),
+        }
+        if any(v == "" for v in user_data.values()):
+            print("[ERROR] 모든 항목을 입력해 주세요.")
+            return
     start_time = time.time()
     embeddings = []
     print(f"[INFO] {capture_time}초간 얼굴 등록을 시작합니다. 화면을 바라봐주세요.")
