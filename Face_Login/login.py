@@ -4,14 +4,8 @@ from insightface.app import FaceAnalysis
 from numpy.linalg import norm
 import mysql.connector
 from PIL import ImageFont, ImageDraw, Image
-
-db_config = {
-    'host': '15.164.48.30',
-    'port': 3306,
-    'user': 'dbchk',
-    'password': 'codingon2751',
-    'database': 'SmartQC'
-}
+from .embedding_DB import set_login_flag
+from Face_Login.embedding_DB import db_config
 
 app = FaceAnalysis(providers=['CPUExecutionProvider'])
 app.prepare(ctx_id=0, det_size=(640, 640))
@@ -39,15 +33,6 @@ def load_registered_users():
     conn.close()
     return users
 
-def set_login_flag(user_name, flag=1):
-    conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor()
-    sql = "UPDATE UserData SET IsLoggedIn = %s WHERE UserName = %s"
-    cursor.execute(sql, (flag, user_name))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    
 def put_text_kr(img, text, pos, font_path='C:/Windows/Fonts/malgun.ttf', font_size=30, color=(255,255,255)):
     img_pil = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     draw = ImageDraw.Draw(img_pil)
@@ -79,7 +64,7 @@ def login_loop():
     selected_user = select_user(users)
     print(f"[INFO] 선택된 사용자: {selected_user['name']}")
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     if not cap.isOpened():
         print("[ERROR] 카메라를 열지 않았습니다.")
         return False

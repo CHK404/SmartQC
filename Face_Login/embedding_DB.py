@@ -49,7 +49,7 @@ def set_login_flag(user_name, flag=1):
     conn.close()
 
 def capture_and_register(user_data=None, capture_time=10, delay=0.5):
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     if not cap.isOpened():
         print("[ERROR] 카메라를 켜주세요.")
         return

@@ -31,7 +31,7 @@ class DefectDetector:
         processed_times = {}
         DETECT_COOLDOWN = 5.0
 
-        for result in self.model.track(source=0, stream=True, conf=0.3):
+        for result in self.model.track(source=1, stream=True, conf=0.3):
             frame = result.orig_img
             now = time.time()
             cx, cy = frame.shape[1] // 2, frame.shape[0] // 2
