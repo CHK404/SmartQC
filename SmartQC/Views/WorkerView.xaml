@@ -88,9 +88,9 @@
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center"
                         VerticalAlignment="Center" Margin="10">
                 <Button Content="START" Width="80" Height="50" Background="#add8ff" Foreground="#fff"
-                        FontWeight="Bold" BorderThickness="0" Margin="0 0 5 0"/>
+                        FontWeight="Bold" BorderThickness="0" Margin="0 0 5 0" Command="{Binding StartCommand}"/>
                 <Button Content="STOP" Width="80" Height="50" Background="Red" Foreground="#fff"
-                        FontWeight="Bold" BorderThickness="0"/> 
+                        FontWeight="Bold" BorderThickness="0" Command="{Binding StopCommand}" /> 
             </StackPanel>
         </Grid>
              

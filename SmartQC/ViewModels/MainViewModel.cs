@@ -13,6 +13,7 @@ using ScottPlot;
 using ScottPlot.WPF;
 using System.Reflection.Emit;
 using static Org.BouncyCastle.Asn1.Cmp.Challenge;
+using SmartQC.ViewModels;
 
 namespace SmartQC.ViewModels
 {
@@ -42,6 +43,9 @@ namespace SmartQC.ViewModels
         public double weekprogressvalue; 
         [ObservableProperty]
         public double monthprogressvalue;
+        [ObservableProperty]
+        private object _currentViewModel;
+
         public List<double> TimeHistory { get; set; } = new();
         public List<double> AvailabilityHistory { get; set; } = new();
         private readonly Random random = new Random();
@@ -65,6 +69,8 @@ namespace SmartQC.ViewModels
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += OnTick;
             _timer.Start();
+
+            CurrentViewModel = new WorkerViewModel();
         }
 
         private void OnTick(object? sender, EventArgs e)
@@ -170,10 +176,19 @@ namespace SmartQC.ViewModels
                 return;
             }
             Monthprogressvalue = ((double)(completedcount - errorcounts) / Totalmonthcount) * 100.0;
-
-
         }
 
+        [RelayCommand]
+        private void ShowWorker()
+        {
+            CurrentViewModel = new WorkerViewModel();
+        }
+
+        [RelayCommand]
+        private void ShowItemList()
+        {
+            CurrentViewModel = new ItemListViewModel();
+        }
         [RelayCommand]
         private void Start()
         {
