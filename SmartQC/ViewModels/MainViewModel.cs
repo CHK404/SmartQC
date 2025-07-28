@@ -14,6 +14,7 @@ using ScottPlot.WPF;
 using System.Reflection.Emit;
 using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 using SmartQC.ViewModels;
+using SmartQC.Views;
 
 namespace SmartQC.ViewModels
 {
@@ -70,7 +71,6 @@ namespace SmartQC.ViewModels
             _timer.Tick += OnTick;
             _timer.Start();
 
-            CurrentViewModel = new WorkerViewModel();
         }
 
         private void OnTick(object? sender, EventArgs e)
@@ -181,13 +181,19 @@ namespace SmartQC.ViewModels
         [RelayCommand]
         private void ShowWorker()
         {
-            CurrentViewModel = new WorkerViewModel();
+            var window = new WorkerView();
+            window.DataContext = new WorkerViewModel();
+            window.Owner = Application.Current.MainWindow;
+            window.ShowDialog();
         }
 
         [RelayCommand]
         private void ShowItemList()
         {
-            CurrentViewModel = new ItemListViewModel();
+            var window = new ItemList();
+            window.DataContext = new ItemListViewModel();
+            window.Owner = Application.Current.MainWindow;
+            window.ShowDialog();
         }
         [RelayCommand]
         private void Start()

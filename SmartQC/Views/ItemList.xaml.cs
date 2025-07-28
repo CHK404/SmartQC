@@ -23,7 +23,6 @@ namespace SmartQC.Views
         public ItemList()
         {
             InitializeComponent();
-            DataContext = new ItemListViewModel();
         }
     }
 }

@@ -9,8 +9,8 @@ namespace SmartQC.ViewModels
 {
     public class RelayCommand : ICommand
     {
-        private readonly Action<object> _execute;
-        private readonly Func<object, bool> _canExecute;
+        private readonly Action<object?> _execute;
+        private readonly Func<object?, bool> _canExecute;
 
         public event EventHandler? CanExecuteChanged
         {
@@ -25,7 +25,6 @@ namespace SmartQC.ViewModels
         }
 
         public bool CanExecute(object? parameter) => _canExecute == null || _canExecute(parameter);
-
         public void Execute(object? parameter) => _execute(parameter);
     }
 }

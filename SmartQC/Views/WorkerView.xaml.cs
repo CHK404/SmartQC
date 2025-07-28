@@ -24,7 +24,6 @@ namespace SmartQC.Views
         public WorkerView()
         {
             InitializeComponent();
-            this.DataContext = new WorkerViewModel();
         }
     }
 }
