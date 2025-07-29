@@ -17,7 +17,7 @@ using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace SmartQC.ViewModels
 {
-    public partial class WorkerVeiwModel : ObservableObject
+    public partial class WorkerViewModel : ObservableObject
     {
         private readonly DispatcherTimer _timer = new DispatcherTimer();
         private readonly Random random = new Random();
@@ -43,7 +43,7 @@ namespace SmartQC.ViewModels
         [ObservableProperty]
         public int progressValue = 0;
 
-        public WorkerVeiwModel()
+        public WorkerViewModel()
         {
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += Ontimer; 
