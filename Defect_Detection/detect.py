@@ -69,7 +69,6 @@ for result in model.track(source=0, stream=True, conf=0.3):
             continue
 
         processed_times[tid] = now
-
         serial_number = str(uuid.uuid4())
         is_defect = (name != "cap_ok")
         print(f"DB_Insert: {serial_number}, {user_name}, {product_name}, {is_defect}")
