@@ -61,17 +61,19 @@ class DefectDetector:
                 processed_times[tid] = now
                 serial_number = str(uuid.uuid4())
                 is_defect = (name != "cap_ok")
-
-                upsert_product_data(product_name, product_info, delivery_due, required_quantity, is_defect)
-                insert_product_detail(serial_number, self.user_name, product_name, is_defect)
-                if is_defect:
-                    log_error(serial_number, name.replace("cap_ng_", ""))
-
-                print(f"DB_Insert: {serial_number}, "f"{self.user_name}, "f"{product_name}, "f"{is_defect}")
-
-            cv2.imshow("Track & Detect", frame)
-            if cv2.waitKey(1) & 0xFF == 27:
-                break
-
-        cv2.destroyAllWindows()
-
+                
+        processed_times[tid] = now
+        serial_number = str(uuid.uuid4())
+        is_defect = (name != "cap_ok")
+        print(f"DB_Insert: {serial_number}, {user_name}, {product_name}, {is_defect}")
+        upsert_product_data(product_name, product_info, delivery_due, required_quantity, is_defect)
+        insert_product_detail(serial_number, user_name, product_name, is_defect)
+        
+        if is_defect:
+            log_error(serial_number, name.replace("cap_ng_",""))
+        
+    cv2.imshow("Track & Detect", frame)
+    if cv2.waitKey(1) & 0xFF == 27:
+        break
+    
+cv2.destroyAllWindows()
